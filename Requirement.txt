@@ -1,0 +1,42 @@
+Overview 
+        Create a basic Refer & Earn feature using the MERN stack. After a user registers, they 
+        should be able to enter a referral code. If the code is valid, the user will receive reward 
+        coins (value stored in the database). 
+
+
+Requirements 
+
+1. User Registration 
+        • Build a simple API to register a user. 
+        • Generate a unique referral code for every new user. 
+        • Store user details in MongoDB (name, email, password, referral code, coins). 
+
+2. Apply Referral Code 
+        • Create an API where a user can submit a referral code after registration. 
+        • Check: 
+            o The referral code exists. 
+            o User is not using their own code. 
+
+3. Reward Coins 
+        • Get the reward coin amount from a config collection in MongoDB. 
+        • If the referral code is valid: 
+            o Add reward coins to the user's account. 
+
+4. Database 
+        Use simple collections: 
+            • users 
+            • config (store reward coin value) 
+
+5. Error Responses 
+        Handle basic errors like: 
+            • Invalid referral code 
+            • Own referral code 
+
+
+
+Deliverables 
+        • Two working APIs: 
+                o POST /register 
+                o POST /apply-referral 
+        • Mongoose models for users and config. 
+        • UI for registration and apply Refer code
