@@ -15,7 +15,7 @@ export default function Nav() {
   const handleLogout = async () => {
     try {
       // Call logout endpoint to clear the cookie on the server
-      await fetch('http://localhost:5000/api/users/logout', {
+      await fetch('https://refer-and-earn-fzqv.onrender.com/api/users/logout', {
         method: 'POST',
         credentials: 'include'
       });

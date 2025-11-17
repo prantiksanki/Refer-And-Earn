@@ -17,7 +17,7 @@ export default function Profile() {
 
     const fetchProfile = async () => {
       try {
-        const res = await authenticatedFetch(`http://localhost:5000/api/users/referral-data/${userEmail}`);
+        const res = await authenticatedFetch(`https://refer-and-earn-fzqv.onrender.com/api/users/referral-data/${userEmail}`);
         const data = await res.json();
         if (res.ok && data && data.user) {
           setUser({

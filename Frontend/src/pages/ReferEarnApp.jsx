@@ -40,7 +40,7 @@ const ReferEarnApp = () => {
 
     try {
       const endpoint =
-        type === "signup" ? "http://localhost:5000/api/users/register" : "http://localhost:5000/api/users/login";
+        type === "signup" ? "https://refer-and-earn-fzqv.onrender.com/api/users/register" : "https://refer-and-earn-fzqv.onrender.com/api/users/login";
 
       const response = await fetch(endpoint, {
         method: "POST",

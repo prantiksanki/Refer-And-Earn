@@ -23,7 +23,7 @@ function ReferralPage() {
   useEffect(() => {
     const fetchReferralData = async () => {
       try {
-        const response = await authenticatedFetch(`http://localhost:5000/api/users/referral-data/${userId}`);
+        const response = await authenticatedFetch(`https://refer-and-earn-fzqv.onrender.com/api/users/referral-data/${userId}`);
         const data = await response.json();
         console.log('Referral Data:', data);
 
@@ -49,7 +49,7 @@ function ReferralPage() {
   // Initialize Socket.IO connection
   useEffect(() => {
     // Connect to Socket.IO server
-    socketRef.current = io('http://localhost:5000', {
+    socketRef.current = io('https://refer-and-earn-fzqv.onrender.com', {
       reconnection: true,
       reconnectionDelay: 1000,
       reconnectionDelayMax: 5000,
@@ -92,7 +92,7 @@ function ReferralPage() {
       // Refetch the complete data to ensure coin balance is correct
       const fetchUpdatedData = async () => {
         try {
-          const response = await fetch(`http://localhost:5000/api/users/referral-data/${userId}`);
+          const response = await fetch(`https://refer-and-earn-fzqv.onrender.com/api/users/referral-data/${userId}`);
           const referralData = await response.json();
           if (response.ok) {
             setCoinBalance(referralData.user.coins || 0);
@@ -123,7 +123,7 @@ function ReferralPage() {
     }
 
     try {
-      const response = await authenticatedFetch('http://localhost:5000/api/referral/apply-referral', {
+      const response = await authenticatedFetch('https://refer-and-earn-fzqv.onrender.com/api/referral/apply-referral', {
         method: 'POST',
         body: JSON.stringify({
           referralCode: inputCode,
@@ -144,7 +144,7 @@ function ReferralPage() {
         
         // Also refetch complete data to ensure everything is in sync
         try {
-          const referralResponse = await authenticatedFetch(`http://localhost:5000/api/users/referral-data/${userId}`);
+          const referralResponse = await authenticatedFetch(`https://refer-and-earn-fzqv.onrender.com/api/users/referral-data/${userId}`);
           const referralData = await referralResponse.json();
           console.log('Updated Referral Data:', referralData);
           
