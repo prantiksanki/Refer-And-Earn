@@ -6,6 +6,7 @@ import ReferEarnApp from "./pages/ReferEarnApp";
 // import AuthPage from "./components/AuthPage";
 import ReferralPage from "./pages/ReferralPage";
 import ProfilePage from "./pages/ProfilePage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   return (
@@ -13,8 +14,16 @@ function App() {
       <Routes>
 
         <Route path="/" element={<ReferEarnApp/>} />
-        <Route path="/referral" element={<ReferralPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/referral" element={
+          <ProtectedRoute>
+            <ReferralPage />
+          </ProtectedRoute>
+        } />
+        <Route path="/profile" element={
+          <ProtectedRoute>
+            <ProfilePage />
+          </ProtectedRoute>
+        } />
       </Routes>
     </Router>
   );

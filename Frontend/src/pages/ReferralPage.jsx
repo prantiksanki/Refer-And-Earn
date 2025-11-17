@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Gift, Users, Zap, Crown, Copy, Check, LogOut } from 'lucide-react';
 import io from 'socket.io-client';
 import Nav from '../components/Nav.jsx';
+import { authenticatedFetch, getUserEmail } from '../utils/auth';
 
 function ReferralPage() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ function ReferralPage() {
   const [coinBalance, setCoinBalance] = useState(0);
   const [rewardTier, setRewardTier] = useState('Silver');
   const [userName, setUserName] = useState('');
-  const [userId] = useState(localStorage.getItem('userEmail') || 'user@example.com');
+  const [userId] = useState(getUserEmail() || 'user@example.com');
   const [loading, setLoading] = useState(true);
   const socketRef = useRef(null);
 
@@ -22,7 +23,7 @@ function ReferralPage() {
   useEffect(() => {
     const fetchReferralData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/users/referral-data/${userId}`);
+        const response = await authenticatedFetch(`http://localhost:5000/api/users/referral-data/${userId}`);
         const data = await response.json();
         console.log('Referral Data:', data);
 
@@ -122,11 +123,8 @@ function ReferralPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/referral/apply-referral', {
+      const response = await authenticatedFetch('http://localhost:5000/api/referral/apply-referral', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify({
           referralCode: inputCode,
           email: userId
@@ -146,7 +144,7 @@ function ReferralPage() {
         
         // Also refetch complete data to ensure everything is in sync
         try {
-          const referralResponse = await fetch(`http://localhost:5000/api/users/referral-data/${userId}`);
+          const referralResponse = await authenticatedFetch(`http://localhost:5000/api/users/referral-data/${userId}`);
           const referralData = await referralResponse.json();
           console.log('Updated Referral Data:', referralData);
           
@@ -180,24 +178,23 @@ function ReferralPage() {
 
 
   return (
-    
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
       <style>{`\n        /* Scoped custom scrollbar for referral lists */\n        .custom-scroll::-webkit-scrollbar { width: 10px; }\n        .custom-scroll::-webkit-scrollbar-track { background: rgba(15,23,42,0.08); border-radius: 8px; }\n        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(15,23,42,0.3); border-radius: 8px; }\n        /* Firefox */\n        .custom-scroll { scrollbar-color: rgba(15,23,42,0.3) rgba(15,23,42,0.08); scrollbar-width: thin; }\n      `}</style>
-      <Nav/>
+      <Nav />
 
-      <main className="px-6 py-12 mx-auto max-w-7xl">
+      <main className="px-4 py-12 mx-auto sm:px-6 max-w-7xl">
         {/* Hero Section */}
         <div className="relative mb-12">
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-600/10 to-cyan-600/10 rounded-3xl blur-3xl"></div>
-          <div className="relative p-8 border shadow-2xl md:p-12 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50 backdrop-blur-sm rounded-3xl">
+          <div className="relative p-6 border shadow-2xl sm:p-8 md:p-12 bg-gradient-to-br from-slate-800/50 to-slate-900/50 border-slate-700/50 backdrop-blur-sm rounded-3xl">
             <div className="flex flex-col items-center gap-8 md:flex-row">
               <div className="flex-shrink-0">
-                <div className="p-4 shadow-2xl bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl shadow-emerald-500/30">
-                  <Gift className="w-12 h-12 text-white" />
+                <div className="p-3 shadow-2xl sm:p-4 bg-gradient-to-br from-emerald-500 to-cyan-500 rounded-2xl shadow-emerald-500/30">
+                  <Gift className="w-10 h-10 text-white sm:w-12 sm:h-12" />
                 </div>
               </div>
               <div className="flex-1">
-                <h1 className="mb-3 text-4xl font-bold text-transparent md:text-5xl bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text">
+                <h1 className="mb-3 text-3xl font-bold text-transparent sm:text-4xl md:text-5xl bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text">
                   Share & Earn Together
                 </h1>
                 <p className="text-lg text-slate-300">
@@ -222,7 +219,7 @@ function ReferralPage() {
             </div>
           </div>
 
-          <div className="relative p-6 overflow-hidden border shadow-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 backdrop-blur-sm rounded-2xl">
+          <div className="relative p-4 overflow-hidden border shadow-xl sm:p-6 bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 backdrop-blur-sm rounded-2xl">
             <div className="absolute top-0 right-0 w-20 h-20 -mt-10 -mr-10 rounded-full bg-cyan-500/10"></div>
             <div className="relative">
               <p className="mb-2 text-sm font-medium text-slate-400">Coin Balance</p>
@@ -234,7 +231,7 @@ function ReferralPage() {
             </div>
           </div>
 
-          <div className="relative p-6 overflow-hidden border shadow-xl bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 backdrop-blur-sm rounded-2xl">
+          <div className="relative p-4 overflow-hidden border shadow-xl sm:p-6 bg-gradient-to-br from-slate-800/60 to-slate-900/60 border-slate-700/50 backdrop-blur-sm rounded-2xl">
             <div className="absolute top-0 right-0 w-20 h-20 -mt-10 -mr-10 rounded-full bg-purple-500/10"></div>
             <div className="relative">
               <p className="mb-2 text-sm font-medium text-slate-400">Reward Tier</p>
@@ -250,17 +247,17 @@ function ReferralPage() {
         {/* Referral Code Box */}
         <div className="relative mb-12">
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 to-emerald-600/10 rounded-2xl blur-2xl"></div>
-          <div className="relative p-8 border shadow-xl bg-gradient-to-r from-slate-800/70 to-slate-900/70 border-slate-700/50 backdrop-blur-sm rounded-2xl">
+          <div className="relative p-6 border shadow-xl sm:p-8 bg-gradient-to-r from-slate-800/70 to-slate-900/70 border-slate-700/50 backdrop-blur-sm rounded-2xl">
             <p className="mb-4 text-sm font-medium text-slate-300">Your Referral Code</p>
             <div className="flex items-center gap-4">
               <div className="flex-1 p-4 border bg-slate-950/50 border-slate-700/50 rounded-xl">
-                <p className="font-mono text-3xl font-bold tracking-wider text-emerald-400">{referralCode}</p>
+                <p className="font-mono text-2xl font-bold tracking-wider break-words sm:text-3xl md:text-4xl text-emerald-400">{referralCode}</p>
               </div>
               <button
                 onClick={handleCopyCode}
-                className="p-4 text-white transition transform shadow-lg bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-xl shadow-emerald-500/30 hover:scale-105"
+                className="p-3 text-white transition transform shadow-lg sm:p-4 bg-gradient-to-br from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-xl shadow-emerald-500/30 hover:scale-105"
               >
-                {copiedCode ? <Check className="w-6 h-6" /> : <Copy className="w-6 h-6" />}
+                {copiedCode ? <Check className="w-5 h-5 sm:w-6 sm:h-6" /> : <Copy className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>
             <p className="mt-3 text-xs text-slate-400">Share this code with friends and earn 50 coins per referral</p>
@@ -268,15 +265,15 @@ function ReferralPage() {
         </div>
 
         {/* Apply Code Section */}
-        <div className="p-8 mb-12 border shadow-xl bg-gradient-to-r from-slate-800/60 to-slate-900/60 border-slate-700/50 backdrop-blur-sm rounded-2xl">
+        <div className="p-6 mb-12 border shadow-xl sm:p-8 bg-gradient-to-r from-slate-800/60 to-slate-900/60 border-slate-700/50 backdrop-blur-sm rounded-2xl">
           <p className="mb-4 text-sm font-medium text-slate-300">Have a referral code?</p>
-          <form onSubmit={handleApplyCode} className="flex gap-4">
+          <form onSubmit={handleApplyCode} className="flex flex-col gap-4 sm:flex-row">
             <input
               type="text"
               placeholder="Enter friend's referral code here..."
-              className="flex-1 px-6 py-4 text-white transition border bg-slate-950/50 border-slate-700/50 placeholder-slate-500 rounded-xl focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
+              className="flex-1 w-full px-6 py-4 text-white transition border bg-slate-950/50 border-slate-700/50 placeholder-slate-500 rounded-xl focus:outline-none focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/20"
             />
-            <button type="submit" className="px-8 py-4 font-bold text-white transition transform shadow-lg bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-xl shadow-emerald-500/30 hover:scale-105">
+            <button type="submit" className="w-full px-8 py-4 font-bold text-white transition transform shadow-lg sm:w-auto bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 rounded-xl shadow-emerald-500/30 hover:scale-105">
               APPLY CODE
             </button>
           </form>
@@ -300,7 +297,7 @@ function ReferralPage() {
               The person who invited you to join. You both earn when you use their code!
             </p>
             
-            <div className="pr-2 space-y-4 overflow-y-auto max-h-96 custom-scroll">
+            <div className="pr-2 space-y-4 overflow-y-auto max-h-64 md:max-h-96 custom-scroll">
               {referredUsersList.length === 0 ? (
                 <div className="py-12 text-center">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50">
@@ -312,7 +309,7 @@ function ReferralPage() {
                 referredUsersList.map((person, index) => (
                   <div
                     key={index}
-                    className="p-4 transition border bg-slate-950/40 border-slate-700/30 rounded-xl hover:border-emerald-500/30"
+                    className="p-3 transition border sm:p-4 bg-slate-950/40 border-slate-700/30 rounded-xl hover:border-emerald-500/30"
                   >
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
@@ -326,7 +323,7 @@ function ReferralPage() {
                         <p className="text-xs font-bold text-emerald-300">Active</p>
                       </div>
                     </div>
-                    <div className="p-3 border rounded-lg bg-slate-900/50 border-slate-700/50">
+                    <div className="p-2 border rounded-lg sm:p-3 bg-slate-900/50 border-slate-700/50">
                       <p className="mb-1 text-xs text-slate-400">Their Code</p>
                       <p className="font-mono font-bold tracking-wider text-emerald-400">{person.code}</p>
                     </div>
@@ -352,7 +349,7 @@ function ReferralPage() {
               Friends who joined using your code. You both earn rewards!
             </p>
 
-            <div className="pr-2 space-y-4 overflow-y-auto max-h-96 custom-scroll">
+            <div className="pr-2 space-y-4 overflow-y-auto max-h-64 md:max-h-96 custom-scroll">
               {referrerList.length === 0 ? (
                 <div className="py-12 text-center">
                   <div className="flex items-center justify-center w-16 h-16 mx-auto mb-4 rounded-full bg-slate-800/50">
@@ -364,7 +361,7 @@ function ReferralPage() {
                 referrerList.map((user, index) => (
                   <div
                     key={index}
-                    className="p-4 transition border bg-slate-950/40 border-slate-700/30 rounded-xl hover:border-cyan-500/30"
+                    className="p-3 transition border sm:p-4 bg-slate-950/40 border-slate-700/30 rounded-xl hover:border-cyan-500/30"
                   >
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-3">
@@ -379,7 +376,7 @@ function ReferralPage() {
                         <p className="text-xs text-slate-400">coins</p>
                       </div>
                     </div>
-                    <div className="p-3 mb-2 border rounded-lg bg-slate-900/50 border-slate-700/50">
+                    <div className="p-2 mb-2 border rounded-lg sm:p-3 bg-slate-900/50 border-slate-700/50">
                       <p className="mb-1 text-xs text-slate-400">Their Code</p>
                       <p className="font-mono font-bold tracking-wider text-cyan-400">{user.code}</p>
                     </div>

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const http = require('http');
 const { Server } = require('socket.io');
+const cookieParser = require('cookie-parser');
 const app = express();
 require('dotenv').config();
 const PORT = process.env.PORT || 5000;
@@ -13,15 +14,20 @@ const cors = require('cors');
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST"]
+    origin: ["http://localhost:5173","https://refer-and-earn-frontend.onrender.com"],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:5173","https://refer-and-earn-frontend.onrender.com"],
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // Make io accessible to routes
 app.set('io', io);

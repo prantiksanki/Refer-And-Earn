@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import Nav from '../components/Nav.jsx';
 import { Zap, Users, Crown, Copy, Check } from 'lucide-react';
+import { authenticatedFetch, getUserEmail } from '../utils/auth';
 
 export default function Profile() {
-  const userEmail = localStorage.getItem("userEmail") || "";
+  const userEmail = getUserEmail() || "";
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -16,7 +17,7 @@ export default function Profile() {
 
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/users/referral-data/${userEmail}`);
+        const res = await authenticatedFetch(`http://localhost:5000/api/users/referral-data/${userEmail}`);
         const data = await res.json();
         if (res.ok && data && data.user) {
           setUser({

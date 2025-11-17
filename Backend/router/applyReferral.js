@@ -1,10 +1,11 @@
 const express = require("express");
 const Config = require("../model/config");
 const User = require("../model/user");
+const { verifyToken } = require("../middleware/auth");
 
 const router = express.Router();
 
-router.post("/apply-referral", async (req, res) => {
+router.post("/apply-referral", verifyToken, async (req, res) => {
     try {
         const { referralCode, email } = req.body;   // email = user applying the code (B)
 

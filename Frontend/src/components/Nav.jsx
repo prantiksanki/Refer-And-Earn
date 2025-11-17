@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { LogOut, Menu, X } from 'lucide-react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
+import { clearAuth } from '../utils/auth';
 
 export default function Nav() {
   const navigate = useNavigate();
@@ -11,10 +12,20 @@ export default function Nav() {
   const isReferral = location.pathname === '/' || location.pathname.startsWith('/referral');
   const isProfile = location.pathname.startsWith('/profile');
 
-  const handleLogout = () => {
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("token");
-    navigate("/");
+  const handleLogout = async () => {
+    try {
+      // Call logout endpoint to clear the cookie on the server
+      await fetch('http://localhost:5000/api/users/logout', {
+        method: 'POST',
+        credentials: 'include'
+      });
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      // Clear client-side auth data
+      clearAuth();
+      navigate("/");
+    }
   };
 
   const closeMenu = () => setMobileMenuOpen(false);

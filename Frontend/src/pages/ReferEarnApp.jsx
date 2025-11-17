@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LandingPage from "../components/LandingPage";
 import AuthPage from "../components/AuthPage";
+import { setUserEmail } from "../utils/auth";
 
 
 const ReferEarnApp = () => {
@@ -46,33 +47,42 @@ const ReferEarnApp = () => {
         headers: {
           "Content-Type": "application/json"
         },
+        credentials: 'include', // Important for cookies to be sent/received
         body: JSON.stringify(formData)
       });
 
       const data = await response.json();
+      console.log("Response:", response.ok, data);
 
       if (!response.ok) {
         setMessage(data.message || "Something went wrong");
+        setLoading(false);
       } else {
         setMessage(data.message || "Success!");
 
-        // If login successful → store token and user email, then redirect
+        // If login successful → store user email and token will be in httpOnly cookie
         if (type === "login") {
-          if (data.token) {
-            localStorage.setItem("token", data.token);
-          }
+          console.log("Login successful, user data:", data.user);
           if (data.user?.email) {
-            localStorage.setItem("userEmail", data.user.email);
+            setUserEmail(data.user.email);
+            console.log("Email set, navigating to /referral");
           }
           // Redirect to referral page after login
-          setTimeout(() => navigate("/referral"), 500);
+          setTimeout(() => {
+            console.log("Navigating to /referral");
+            navigate("/referral");
+          }, 500);
+        } else {
+          // If signup successful, keep on page and show message
+          // User can then click login button
+          setLoading(false);
         }
       }
-    } catch {
+    } catch (error) {
+      console.error("Error:", error);
       setMessage("Server error. Try again later.");
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (
