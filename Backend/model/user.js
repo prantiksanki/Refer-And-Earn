@@ -25,11 +25,16 @@ const userSchema = new mongoose.Schema({
         type: Number,
         default: 0
     }, 
-    usedReferral:
+    usedReferral:         // Codes this user has used
     {
         type: [String],
         default: [] ,
-    }
+    }, 
+    usedByReferral:    // Codes of users who used this user's referral code
+    {
+        type: [String],
+        default: [] ,
+    },
 }, { timestamps: true });
 
 

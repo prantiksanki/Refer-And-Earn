@@ -1,6 +1,7 @@
 import React from "react";
 import { Mail, Lock, User } from "lucide-react";
 import Bird from "../components/Bird";
+import { useEffect } from "react";
 
 const AuthPage = ({
   type,
@@ -10,12 +11,26 @@ const AuthPage = ({
   loading,
   message,
   goTo
-})  => {
+}) => {
+
+
+   useEffect(() => {
+    if (type === "signup" && message === "User registered successfully") {
+      const timer = setTimeout(() => {
+        goTo("login");
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [message, type, goTo]);
+  
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50 flex items-center justify-center py-8">
-      <div className="w-full max-w-screen-xl bg-white rounded-2xl shadow-2xl ring-1 ring-blue-100 overflow-hidden">
+    <div className="flex items-center justify-center min-h-screen py-8 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+      <div className="w-full max-w-screen-xl overflow-hidden bg-white shadow-2xl rounded-2xl ring-1 ring-blue-100">
         <div className="md:grid md:grid-cols-2 min-h-[72vh]">
-          <div className="p-10 flex flex-col items-start gap-6 bg-white">
+          
+          {/* LEFT SECTION */}
+          <div className="flex flex-col items-start gap-6 p-10 bg-white">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-green-400 rounded"></div>
               <span className="font-semibold">Refer & Earn</span>
@@ -27,19 +42,40 @@ const AuthPage = ({
               </div>
             </div>
 
-            <h3 className="text-2xl font-bold mt-4">Join the club. Get rewards.</h3>
+            <h3 className="mt-4 text-2xl font-bold">Join the club. Get rewards.</h3>
             <p className="text-gray-600">
               Learning is more fun with friends! Invite them to join and you'll
               both earn cool rewards.
             </p>
           </div>
 
-          {/* Right form column */}
+          {/* RIGHT SECTION */}
           <div className="p-10 bg-gray-50">
-            <h2 className="text-2xl font-bold mb-6">
+
+            {/* 🔥 LOGIN / SIGNUP BUTTON TOGGLE */}
+            <div className="flex items-center mb-8">
+              <button
+                onClick={() => goTo("login")}
+                className={`px-6 py-2 rounded-l-full border border-gray-300 
+                  ${type === "login" ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600"}`}
+              >
+                Login
+              </button>
+
+              <button
+                onClick={() => goTo("signup")}
+                className={`px-6 py-2 rounded-r-full border border-gray-300 
+                  ${type === "signup" ? "bg-green-500 text-white border-green-500" : "bg-white text-gray-600"}`}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            <h2 className="mb-6 text-2xl font-bold">
               {type === "signup" ? "Create your account" : "Welcome back"}
             </h2>
 
+            {/* FORM FIELDS */}
             <div className="space-y-4">
               {type === "signup" && (
                 <div>
@@ -50,7 +86,7 @@ const AuthPage = ({
                     placeholder="Full Name"
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 rounded-full border border-gray-200 bg-white"
+                    className="w-full px-4 py-3 bg-white border border-gray-200 rounded-full"
                   />
                 </div>
               )}
@@ -63,7 +99,7 @@ const AuthPage = ({
                   placeholder="Email Address"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-full border border-gray-200 bg-white"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-full"
                 />
               </div>
 
@@ -75,38 +111,30 @@ const AuthPage = ({
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-full border border-gray-200 bg-white"
+                  className="w-full px-4 py-3 bg-white border border-gray-200 rounded-full"
                 />
               </div>
 
-
+              {/* STATUS MESSAGE */}
               {message && (
-                <div className="p-3 rounded-md bg-green-50 text-green-700">{message}</div>
+                <div className="p-3 text-green-700 rounded-md bg-green-50">
+                  {message}
+                </div>
               )}
 
+              {/* SUBMIT BUTTON */}
               <button
                 onClick={() => handleSubmit(type)}
                 disabled={loading}
-                className="w-full py-3 bg-green-500 text-white rounded-full font-semibold"
+                className="w-full py-3 font-semibold text-white bg-green-500 rounded-full"
               >
                 {loading ? "Processing..." : type === "signup" ? "CREATE ACCOUNT" : "LOG IN"}
               </button>
 
-              <div className="text-center text-sm text-gray-600">
-                {type === "signup" ? (
-                  <>
-                    Already have an account?{' '}
-                    <button onClick={() => goTo('login')} className="text-green-600 font-bold">Log In</button>
-                  </>
-                ) : (
-                  <>
-                    Don't have an account?{' '}
-                    <button onClick={() => goTo('signup')} className="text-green-600 font-bold">Sign Up</button>
-                  </>
-                )}
-              </div>
+             
             </div>
           </div>
+
         </div>
       </div>
     </div>

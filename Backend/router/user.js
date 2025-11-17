@@ -5,14 +5,14 @@ const Config = require("../model/config");
 
 const router = express.Router();
 
+
+// ---------------------- REGISTER ----------------------
 router.post("/register", async (req, res) => {
     try {
         let { name, email, password } = req.body;
 
         if (!name || !email || !password) {
-            return res.status(400).json({
-                message: "Name, email, and password are required"
-            });
+            return res.status(400).json({ message: "Name, email, and password are required" });
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -21,53 +21,43 @@ router.post("/register", async (req, res) => {
         }
 
         if (password.length < 6) {
-            return res.status(400).json({
-                message: "Password must be at least 6 characters long"
-            });
+            return res.status(400).json({ message: "Password must be at least 6 characters long" });
         }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(409).json({
-                message: "Email is already registered"
-            });
+            return res.status(409).json({ message: "Email is already registered" });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Generate unique referral code
         let referralCode;
         let exists = true;
-
         while (exists) {
-            const random = Math.floor(10000 + Math.random() * 90000);      // referral code already exists 
+            const random = Math.floor(10000 + Math.random() * 90000);
             referralCode = (name.split(" ")[0] + random).toUpperCase();
             exists = await User.findOne({ referralCode });
         }
 
-        let coin_Value = Math.floor(Math.random() * 101);
-        if (isNaN(coin_Value) || coin_Value < 0 || coin_Value > 100) {
-            coin_Value = 100;
-        }
+        // Fixed reward value (not random, so it's consistent)
+        const FIXED_REWARD_VALUE = 50;
 
         const newUser = new User({
             name,
             email,
             password: hashedPassword,
-            referralCode
+            referralCode,
+            coins: 0,
+            usedReferral: []
         });
 
         await newUser.save();
 
-        const existingConfig = await Config.findOne({ key: referralCode });
-        if (existingConfig) {
-            return res.status(500).json({
-                message: "Referral code conflict in config, try again"
-            });
-        }
-
+        // Create reward config with fixed value
         const configData = new Config({
             key: referralCode,
-            value: coin_Value,
+            value: FIXED_REWARD_VALUE,
             email: email
         });
 
@@ -81,13 +71,12 @@ router.post("/register", async (req, res) => {
 
     } catch (error) {
         console.error("Register error :", error);
-        res.status(500).json({
-            message: "Error registering user",
-            error: error.message
-        });
+        res.status(500).json({ message: "Error registering user", error: error.message });
     }
 });
 
+
+// ---------------------- LOGIN ----------------------
 router.post("/login", async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -105,16 +94,79 @@ router.post("/login", async (req, res) => {
         if (!isPasswordValid) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
+
         res.status(200).json({
             message: "Login successful",
             user
         });
 
     } catch (error) {
-        res.status(500).json({
-            message: "Error logging in",
-            error: error.message
+        res.status(500).json({ message: "Error logging in", error: error.message });
+    }
+});
+
+
+// ---------------------- REFERRAL DATA ----------------------
+router.get("/referral-data/:email", async (req, res) => {
+    try {
+        const { email } = req.params;
+
+        // Current user
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Get user's referral reward config (what THIS user gives to others)
+        const userConfig = await Config.findOne({ key: user.referralCode });
+        const userRewardValue = userConfig ? userConfig.value : 50;
+
+            // ✅ Users who used THIS user's code (get from usedByReferral array)
+            const referredByYouCodes = user.usedByReferral;
+            const referredByYouList = await User.find({ referralCode: { $in: referredByYouCodes } });
+        
+            const referredByYouData = referredByYouList.map(u => ({
+                name: u.name,
+                code: u.referralCode,
+                coins: userRewardValue,  // ✅ Show the REWARD value they received (from this user's config)
+                email: u.email,
+                status: "completed",
+                joinedDate: new Date(u.createdAt).toLocaleDateString()
+            }));
+        
+            // ✅ Get THIS user's referrers (who referred codes THIS user has used)
+            let referrersList = [];
+        
+            if (user.usedReferral.length > 0) {
+                const referrers = await User.find({ referralCode: { $in: user.usedReferral } });
+                referrersList = referrers.map(referrer => ({
+                    name: referrer.name,
+                    email: referrer.email,
+                    code: referrer.referralCode,
+                    joinedDate: new Date(referrer.createdAt).toLocaleDateString(),
+                    status: "active"
+                }));
+            }
+
+        res.status(200).json({
+            message: "Referral data fetched successfully",
+            user: {
+                name: user.name,
+                email: user.email,
+                referralCode: user.referralCode,
+                coins: user.coins,  // ✅ This user's actual coins
+                totalReferrals: referredByYouList.length,
+                rewardTier:
+                    user.coins >= 1000 ? "Premium" :
+                        user.coins >= 500 ? "Gold" : "Silver"
+            },
+            referredUsers: referredByYouData,
+                referrers: referrersList,
+            coinsPerReferral: userRewardValue
         });
+
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching referral data", error: error.message });
     }
 });
 

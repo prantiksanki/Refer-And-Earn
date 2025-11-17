@@ -1,8 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LandingPage from "../components/LandingPage";
 import AuthPage from "../components/AuthPage";
 
+
 const ReferEarnApp = () => {
+  const navigate = useNavigate();
   const [currentPage, setCurrentPage] = useState("landing");
   const [formData, setFormData] = useState({
     name: "",
@@ -53,15 +56,19 @@ const ReferEarnApp = () => {
       } else {
         setMessage(data.message || "Success!");
 
-        // If login successful → store token
-        if (type === "login" && data.token) {
-          localStorage.setItem("token", data.token);
+        // If login successful → store token and user email, then redirect
+        if (type === "login") {
+          if (data.token) {
+            localStorage.setItem("token", data.token);
+          }
+          if (data.user?.email) {
+            localStorage.setItem("userEmail", data.user.email);
+          }
+          // Redirect to referral page after login
+          setTimeout(() => navigate("/referral"), 500);
         }
-
-        // OPTIONAL: redirect after success
-        // setCurrentPage("landing");
       }
-    } catch (err) {
+    } catch {
       setMessage("Server error. Try again later.");
     }
 
