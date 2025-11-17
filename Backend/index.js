@@ -5,6 +5,9 @@ require('dotenv').config();
 const PORT = process.env.PORT || 5000;
 const userRouter = require('./router/user');
 const applyReferral = require('./router/applyReferral');
+const cors = require('cors');
+
+app.use(cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
