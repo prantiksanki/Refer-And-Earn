@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LandingPage from "../components/LandingPage";
 import AuthPage from "../components/AuthPage";
-import { setUserEmail } from "../utils/auth";
+import { setUserEmail, setToken } from "../utils/auth";
 
 
 const ReferEarnApp = () => {
@@ -66,6 +66,15 @@ const ReferEarnApp = () => {
           if (data.user?.email) {
             setUserEmail(data.user.email);
             console.log("Email set, navigating to /referral");
+          }
+          // If server returned a token in response body, store it for later requests
+          if (data.token) {
+            try {
+              setToken(data.token);
+              console.log('Token stored in cookie');
+            } catch (e) {
+              console.warn('Failed to set token cookie', e);
+            }
           }
           // Redirect to referral page after login
           setTimeout(() => {
