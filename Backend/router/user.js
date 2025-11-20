@@ -11,7 +11,7 @@ const router = express.Router();
 const generateToken = (user) => {
     return jwt.sign(
         { id: user._id, email: user.email, name: user.name },
-        process.env.JWT_SECRET || 'your-secret-key',
+        process.env.JWT_SECRET || 'Prantik',
         { expiresIn: '7d' }
     );
 };
