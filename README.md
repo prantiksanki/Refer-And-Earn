@@ -77,14 +77,14 @@ cd Refer-And-Earn
 ### 2. Backend Setup
 
 ```bash
-cd server
+cd Backend
 npm install
 ```
 
 ### 3. Frontend Setup
 
 ```bash
-cd ../client
+cd ../Frontend
 npm install
 ```
 
@@ -113,15 +113,15 @@ export const API_BASE_URL = "http://localhost:5000/api";
 ### Start Backend Server
 
 ```bash
-cd server
+cd Backend
 npm start    # or npm run dev
 ```
 
 ### Start Frontend Client
 
 ```bash
-cd ../client
-npm start    # or npm run dev
+cd ../Frontend
+npm run dev
 ```
 
 Access the app at:
@@ -153,17 +153,12 @@ Contributions are welcome! Here's how you can help:
 
 ---
 
-## 📄 License
 
-Distributed under the **MIT License**.
-See `LICENSE` for more information.
-
----
 
 ## 📧 Contact
 
 **Prantik Sanki**
-LinkedIn / Email: *[Add your contact link]*
+LinkedIn / Email: *[prantiksanki@gmail.com]*
 
 🔗 **Project Link:**
-[https://github.com/prantiksanki/Refer-And-Earn](https://github.com/prantiksanki/Refer-And-Earn)
+[https://github.com/prantiksanki/Refer-And-Earn](https://refer-and-earn-frontend.onrender.com)
