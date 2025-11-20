@@ -158,7 +158,7 @@ Contributions are welcome! Here's how you can help:
 ## 📧 Contact
 
 **Prantik Sanki**
-LinkedIn / Email: *[prantiksanki@gmail.com]*
+LinkedIn / Email: *prantiksanki@gmail.com*
 
 🔗 **Project Link:**
-[https://github.com/prantiksanki/Refer-And-Earn](https://refer-and-earn-frontend.onrender.com)
+[https://refer-and-earn-frontend.onrender.com](https://refer-and-earn-frontend.onrender.com)
