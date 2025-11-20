@@ -1,8 +1,3 @@
-Here’s a polished and professional **README.md** based on your provided content.
-You can copy-paste it directly into your repository.
-
----
-
 # 💰 Refer-And-Earn System
 
 A powerful, scalable, and secure **Refer-And-Earn** platform designed to accelerate user acquisition through referral incentives. This system enables users to generate personalized referral links, track conversions, and earn rewards — all within a modern, responsive interface.
