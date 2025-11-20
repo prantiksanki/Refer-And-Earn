@@ -106,12 +106,22 @@ function ReferralPage() {
       fetchUpdatedData();
     });
 
+    socketRef.current.on('coins-updated', (data) => {
+      console.log('Coins Updated:', data);
+      if (data.totalCoins !== undefined && data.totalCoins !== null) {
+        setCoinBalance(data.totalCoins);
+        // Update reward tier based on coins
+        const tier = data.totalCoins >= 500 ? 'Premium' : data.totalCoins >= 200 ? 'Gold' : 'Silver';
+        setRewardTier(tier);
+      }
+    });
+
     return () => {
       if (socketRef.current) {
         socketRef.current.disconnect();
       }
     };
-  }, [userId, coinBalance]);
+  }, [userId]); // Removed coinBalance from dependencies to prevent reconnection loops
 
   const handleApplyCode = async (e) => {
     e.preventDefault();

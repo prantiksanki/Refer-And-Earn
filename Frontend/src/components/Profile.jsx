@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Nav from '../components/Nav.jsx';
 import { Zap, Users, Crown, Copy, Check } from 'lucide-react';
 import { authenticatedFetch, getUserEmail } from '../utils/auth';
+import io from 'socket.io-client';
 
 export default function Profile() {
   const userEmail = getUserEmail() || "";
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [copied, setCopied] = useState(false);
+  const socketRef = useRef(null);
 
   useEffect(() => {
     if (!userEmail) {
@@ -37,6 +39,61 @@ export default function Profile() {
     };
 
     fetchProfile();
+  }, [userEmail]);
+
+  // Initialize Socket.IO connection for real-time updates
+  useEffect(() => {
+    if (!userEmail) return;
+
+    // Connect to Socket.IO server
+    socketRef.current = io('https://refer-and-earn-fzqv.onrender.com', {
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      reconnectionAttempts: 5
+    });
+
+    // Join user room
+    socketRef.current.emit('join-user', userEmail);
+
+    // Listen for real-time coin updates
+    socketRef.current.on('referral-applied', (data) => {
+      console.log('Referral Applied (Profile):', data);
+      if (data.totalCoins !== undefined && data.totalCoins !== null) {
+        setUser(prev => prev ? {
+          ...prev,
+          coins: data.totalCoins,
+          rewardTier: data.totalCoins >= 1000 ? 'Premium' : data.totalCoins >= 500 ? 'Gold' : 'Silver'
+        } : null);
+      }
+    });
+
+    socketRef.current.on('coins-updated', (data) => {
+      console.log('Coins Updated (Profile):', data);
+      if (data.totalCoins !== undefined && data.totalCoins !== null) {
+        setUser(prev => prev ? {
+          ...prev,
+          coins: data.totalCoins,
+          rewardTier: data.totalCoins >= 1000 ? 'Premium' : data.totalCoins >= 500 ? 'Gold' : 'Silver'
+        } : null);
+      }
+    });
+
+    socketRef.current.on('new-referral', (data) => {
+      console.log('New Referral (Profile):', data);
+      if (data.totalReferrals !== undefined && data.totalReferrals !== null) {
+        setUser(prev => prev ? {
+          ...prev,
+          totalReferrals: data.totalReferrals
+        } : null);
+      }
+    });
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
   }, [userEmail]);
 
   const handleCopy = () => {

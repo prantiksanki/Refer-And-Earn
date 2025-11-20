@@ -51,8 +51,7 @@ router.post("/register", async (req, res) => {
             exists = await User.findOne({ referralCode });
         }
 
-        // Fixed reward value (not random, so it's consistent)
-        const FIXED_REWARD_VALUE = 50;
+        const FIXED_REWARD_VALUE = Math.floor(Math.random() * 100) + 1;
 
         const newUser = new User({
             name,

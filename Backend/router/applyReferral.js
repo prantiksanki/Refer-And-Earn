@@ -44,7 +44,8 @@ router.post("/apply-referral", verifyToken, async (req, res) => {
             });
         }
 
-        const referrerRewardConfig = await Config.findOne({ key: user.referralCode });
+        // Get the referrer's (A's) reward config - this determines how much B gets
+        const referrerRewardConfig = await Config.findOne({ key: code });
 
         if (!referrerRewardConfig || !referrerRewardConfig.value) {
             return res.status(500).json({
@@ -55,8 +56,8 @@ router.post("/apply-referral", verifyToken, async (req, res) => {
 
         const rewardAmount = referrerRewardConfig.value;
 
-        // ✅ CORRECT LOGIC: Only B (the new user) gets coins, using A's reward value
-        referredUser.coins += rewardAmount;
+        // ✅ CORRECT LOGIC: B (the user applying the code) gets coins, using A's reward value
+        user.coins += rewardAmount;
 
         // B records that they used A's referral code
         user.usedReferral.push(code);
@@ -80,9 +81,15 @@ router.post("/apply-referral", verifyToken, async (req, res) => {
         io.to(email).emit('referral-applied', {
             message: "Referral code applied successfully",
             coinsAwarded: rewardAmount,
-            totalCoins: user.coins,
+            totalCoins: user.coins, // B's updated coin balance
             usedReferral: user.usedReferral,
             referrer: referrerInfo
+        });
+
+        // Also emit coins-updated event for B to ensure real-time update
+        io.to(email).emit('coins-updated', {
+            totalCoins: user.coins,
+            coinsAwarded: rewardAmount
         });
 
         // Notify A that B used their code
