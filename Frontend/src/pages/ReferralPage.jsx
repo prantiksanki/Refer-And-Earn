@@ -78,8 +78,11 @@ function ReferralPage() {
         setRewardTier(tier);
       }
       
-      // Note: User's referrer will be refreshed when they apply the code
-      // This is already handled in handleApplyCode function
+      // Update "Who Referred You" section in real-time
+      if (data.referrer) {
+        console.log('Updating referrer list with:', data.referrer);
+        setReferredUsersList([data.referrer]);
+      }
     });
 
     // Listen for new referral event (when someone uses YOUR code)
