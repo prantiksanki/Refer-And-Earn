@@ -30,14 +30,14 @@ A powerful, scalable, and secure **Refer-And-Earn** platform designed to acceler
 
 ### **Frontend**
 
-* React.js / Next.js
+* React.js
 * Tailwind CSS
-* TypeScript / JavaScript
+* JavaScript
 
 ### **Backend**
 
-* Node.js / Express.js
-* MongoDB (NoSQL)
+* Node.js + Express.js
+* MongoDB 
 
 ### **Database & Logic**
 
