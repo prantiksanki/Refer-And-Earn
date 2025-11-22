@@ -56,17 +56,14 @@ router.post("/apply-referral", verifyToken, async (req, res) => {
 
         const rewardAmount = referrerRewardConfig.value;
 
-        // ✅ CORRECT LOGIC: B (the user applying the code) gets coins, using A's reward value
         user.coins += rewardAmount;
 
-        // B records that they used A's referral code
         user.usedReferral.push(code);
         referredUser.usedByReferral.push(user.referralCode);
 
         await user.save();
         await referredUser.save();
 
-        // ✅ IMPORTANT: A's coins NEVER change - we don't modify referredUser at all
 
         const referrerInfo = {
             name: referredUser.name,
@@ -77,23 +74,20 @@ router.post("/apply-referral", verifyToken, async (req, res) => {
 
         const io = req.app.get('io');
 
-        // Notify B that they earned coins by using A's code
         io.to(email).emit('referral-applied', {
             message: "Referral code applied successfully",
             coinsAwarded: rewardAmount,
-            totalCoins: user.coins, // B's updated coin balance
+            totalCoins: user.coins, 
             usedReferral: user.usedReferral,
             referrer: referrerInfo
         });
 
-        // Also emit coins-updated event for B to ensure real-time update
         io.to(email).emit('coins-updated', {
             totalCoins: user.coins,
             coinsAwarded: rewardAmount
         });
 
-        // Notify A that B used their code
-        // A's coins don't change, just inform about the referral
+
         io.to(referredUser.email).emit('new-referral', {
             referredBy: user.name,
             friendEmail: user.email,
