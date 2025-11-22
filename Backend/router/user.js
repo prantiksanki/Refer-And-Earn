@@ -64,7 +64,6 @@ router.post("/register", async (req, res) => {
 
         await newUser.save();
 
-        // Create reward config with fixed value
         const configData = new Config({
             key: referralCode,
             value: FIXED_REWARD_VALUE,
@@ -174,20 +173,18 @@ router.get("/referral-data/:email", verifyToken, async (req, res) => {
         const userConfig = await Config.findOne({ key: user.referralCode });
         const userRewardValue = userConfig ? userConfig.value : 50;
 
-            // ✅ Users who used THIS user's code (get from usedByReferral array)
             const referredByYouCodes = user.usedByReferral;
             const referredByYouList = await User.find({ referralCode: { $in: referredByYouCodes } });
         
             const referredByYouData = referredByYouList.map(u => ({
                 name: u.name,
                 code: u.referralCode,
-                coins: userRewardValue,  // ✅ Show the REWARD value they received (from this user's config)
+                coins: userRewardValue,  
                 email: u.email,
                 status: "completed",
                 joinedDate: new Date(u.createdAt).toLocaleDateString()
             }));
         
-            // ✅ Get THIS user's referrers (who referred codes THIS user has used)
             let referrersList = [];
         
             if (user.usedReferral.length > 0) {
@@ -207,7 +204,7 @@ router.get("/referral-data/:email", verifyToken, async (req, res) => {
                 name: user.name,
                 email: user.email,
                 referralCode: user.referralCode,
-                coins: user.coins,  // ✅ This user's actual coins
+                coins: user.coins,  
                 totalReferrals: referredByYouList.length,
                 rewardTier:
                     user.coins >= 1000 ? "Premium" :
